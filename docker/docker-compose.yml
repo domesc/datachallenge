@@ -1,0 +1,32 @@
+version: '3'
+networks:
+  challenge:
+
+services:
+  kafka:
+    image: confluentinc/cp-kafka:5.1.2
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      LOG4J_LOGGER_KAFKA: INFO,stdout
+      #KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:29092,OUTSIDE://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CREATE_TOPICS: "challenge-topic"
+    depends_on:
+      - "zookeeper"
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    networks:
+      - challenge
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:5.1.2
+    networks:
+      - challenge
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
